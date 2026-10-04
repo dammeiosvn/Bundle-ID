@@ -51,7 +51,11 @@
     border: 1px solid var(--line);
     box-shadow: inset 1px 1px 0 rgba(255,255,255,.2), -6px -6px 14px var(--hi), 7px 8px 16px var(--lo);
   }
-  .field { flex: 1; display: flex; align-items: center; gap: 8px; height: 52px; border-radius: 18px; padding: 0 14px; }
+  .field { flex: 1; display: flex; align-items: center; gap: 8px; height: 52px; border-radius: 999px; padding: 0 16px; transition: border-color .2s, box-shadow .2s; }
+  .field:focus-within {
+    border-color: #fff;
+    box-shadow: 0 0 0 1px #fff, 0 0 14px rgba(255,255,255,.55);
+  }
   .field svg { flex: none; opacity: .7; }
   input {
     flex: 1; border: 0; outline: 0; background: transparent; color: var(--ink);
@@ -59,8 +63,19 @@
   }
   input::placeholder { color: rgba(244,244,242,.42); }
   .store {
-    width: 64px; height: 52px; border-radius: 18px; color: var(--ink);
-    font: 650 15px/1 -apple-system, system-ui, sans-serif; letter-spacing: .04em;
+    width: 52px; height: 52px; border-radius: 50%; color: var(--ink); padding: 0;
+    font: 650 13px/1 -apple-system, system-ui, sans-serif; letter-spacing: .02em;
+  }
+  .fav {
+    width: 52px; height: 52px; border-radius: 50%; color: #F3D27A; border: 1px solid var(--line);
+    background: #5C5C5C; font-size: 22px;
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,.2), -6px -6px 14px var(--hi), 7px 8px 16px var(--lo);
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 62% { opacity: .4; text-shadow: none; }
+    74% { opacity: 1; text-shadow: 0 0 12px #fff, 0 0 4px #F3D27A; }
+    100% { opacity: .4; text-shadow: none; }
   }
   .store:active, .chip:active {
     box-shadow: inset 4px 4px 8px rgba(0,0,0,.35), inset -3px -3px 7px rgba(255,255,255,.12);
@@ -122,11 +137,13 @@
   .chip { height: 44px; border-radius: 14px; color: var(--ink); font: 640 13px/1 -apple-system, system-ui, sans-serif; }
   .chip.on { outline: 1px solid rgba(255,255,255,.45); }
   .toast {
-    position: fixed; left: 50%; bottom: calc(24px + var(--safe-b));
-    transform: translateX(-50%) translateY(8px); opacity: 0;
-    background: #2c2c2c; color: #fff; border-radius: 999px;
-    padding: 8px 14px; font-size: 13px; pointer-events: none; transition: .25s ease;
+    position: fixed; left: 16px; right: 16px; top: calc(10px + var(--safe-t));
+    transform: translateY(-140%); opacity: 0; z-index: 9;
+    background: #0A84FF; color: #fff; border-radius: 16px;
+    padding: 12px 14px; font-size: 14px; font-weight: 600; text-align: center;
+    pointer-events: none; transition: transform .35s ease, opacity .35s ease;
   }
+  .toast.on { transform: translateY(0); opacity: 1; }
   .row { display: flex; align-items: center; justify-content: space-between; }
   .x, .go {
     border: 0; color: var(--ink); background: #5C5C5C; border-radius: 12px;
@@ -144,6 +161,7 @@
       <div class="hint">Chạm chép · giữ Store</div>
     </header>
     <div class="search-row">
+      <button class="fav" id="favBtn" type="button" aria-label="Yêu thích">★</button>
       <label class="field">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         <input id="q" placeholder="Tên, bundle id hoặc link" autocomplete="off" enterkeyhint="search">
@@ -158,6 +176,7 @@
       <div class="grid" id="grid"></div>
     </div>
   </div>
+  <div class="toast" id="toast">Đã sao chép</div>
   <div class="sheet" id="help">
     <div class="panel">
       <div class="row">
@@ -201,7 +220,13 @@ STORES.forEach(code => {
 });
 storeBtn.onclick = () => sheet.classList.add("on");
 sheet.onclick = e => { if (e.target === sheet) sheet.classList.remove("on"); };
-q.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(run, 320); });
+let favMode = false;
+document.getElementById("favBtn").onclick = () => {
+  favMode = true;
+  q.blur();
+  paint([{ title: "Yêu thích", apps: load("bid.pins") }]);
+};
+q.addEventListener("input", () => { favMode = false; clearTimeout(timer); timer = setTimeout(run, 320); });
 q.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); run(); } });
 
 function art(u) { return u ? u.replace(/\/\d+x\d+bb\.(jpg|png)/, "/512x512bb.$1") : ""; }
@@ -209,7 +234,7 @@ function toast(t) {
   const el = document.getElementById("toast");
   el.textContent = t;
   el.classList.add("on");
-  setTimeout(() => el.classList.remove("on"), 1200);
+  setTimeout(() => el.classList.remove("on"), 2000);
 }
 function priceOf(a) {
   if (a.formattedPrice) return a.price === 0 ? "Miễn phí" : a.formattedPrice;
@@ -232,7 +257,7 @@ function togglePin(a) {
   const cur = load("bid.pins");
   const has = cur.some(x => x.trackId === row.trackId);
   save("bid.pins", has ? cur.filter(x => x.trackId !== row.trackId) : [row, ...cur].slice(0, 20));
-  toast(has ? "Đã bỏ ghim" : "Đã ghim");
+  toast(has ? "Đã bỏ " + (row.trackName || "app") + " khỏi yêu thích" : "Đã thêm " + (row.trackName || "app") + " vào yêu thích");
 }
 async function call(url) {
   try {
@@ -306,7 +331,7 @@ function card(a, i) {
       return;
     }
     if (long) return;
-    navigator.clipboard.writeText(a.bundleId).then(() => toast("Đã chép " + a.bundleId)).catch(() => toast(a.bundleId));
+    navigator.clipboard.writeText(a.bundleId).then(() => toast("Đã sao chép - " + a.bundleId)).catch(() => toast("Đã sao chép - " + a.bundleId));
     remember(a);
   });
   return el;
@@ -322,11 +347,16 @@ function paint(groups) {
     list.appendChild(h);
     g.apps.forEach(a => list.appendChild(card(a, n++)));
   });
-  if (!n) list.innerHTML = '<div class="empty">Chưa có gì. Tìm tên, dán bundle id hoặc link App Store.</div>';
+  if (!n) list.innerHTML = '<div class="empty">' + (favMode ? "Chưa có yêu thích." : "Chưa có gì. Tìm tên, dán bundle id hoặc link App Store.") + '</div>';
 }
 async function run() {
   const term = q.value.trim();
   const id = ++seq;
+  if (favMode && !term) {
+    paint([{ title: "Yêu thích", apps: load("bid.pins") }]);
+    return;
+  }
+  favMode = false;
   if (!term) {
     paint([{ title: "Ghim", apps: load("bid.pins") }, { title: "Gần đây", apps: load("bid.history") }]);
     return;
