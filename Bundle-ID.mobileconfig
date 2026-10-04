@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>PayloadContent</key>
+  <array>
+    <dict>
+      <key>FullScreen</key>
+      <true/>
+      <key>IgnoreManifestScope</key>
+      <true/>
+      <key>IsRemovable</key>
+      <true/>
+      <key>Label</key>
+      <string>Bundle ID</string>
+      <key>Precomposed</key>
+      <true/>
+      <key>URL</key>
+      <string>https://dammeiosvn.github.io/Bundle-ID/</string>
+      <key>Icon</key>
+      <data>
+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
+      </data>
+      <key>PayloadDescription</key>
+      <string>Webclip Bundle ID</string>
+      <key>PayloadDisplayName</key>
+      <string>Bundle ID</string>
+      <key>PayloadIdentifier</key>
+      <string>vn.dammeios.bundleid.webclip</string>
+      <key>PayloadType</key>
+      <string>com.apple.webClip.managed</string>
+      <key>PayloadUUID</key>
+      <string>7C4E9A21-1B6D-4F83-9E20-B0D1E2F3A4B5</string>
+      <key>PayloadVersion</key>
+      <integer>1</integer>
+    </dict>
+  </array>
+  <key>PayloadDisplayName</key>
+  <string>Bundle ID</string>
+  <key>PayloadIdentifier</key>
+  <string>vn.dammeios.bundleid</string>
+  <key>PayloadRemovalDisallowed</key>
+  <false/>
+  <key>PayloadType</key>
+  <string>Configuration</string>
+  <key>PayloadUUID</key>
+  <string>3E8F1C44-9A27-4C65-B118-D6E7F8091A2B</string>
+  <key>PayloadVersion</key>
+  <integer>1</integer>
+</dict>
+</plist>
