@@ -28,70 +28,51 @@
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body {
-    margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    margin: 0; background: var(--bg); color: var(--ink);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  body {
-    min-height: 100dvh;
-    overscroll-behavior: none;
-    touch-action: manipulation;
-  }
+  body { min-height: 100dvh; overscroll-behavior: none; touch-action: manipulation; }
   .app {
-    min-height: 100dvh;
-    display: flex; flex-direction: column;
+    min-height: 100dvh; display: flex; flex-direction: column;
     padding:
       calc(14px + var(--safe-t))
-      calc(22px + var(--safe-r))
+      calc(20px + var(--safe-r))
       calc(28px + var(--safe-b))
-      calc(22px + var(--safe-l));
+      calc(20px + var(--safe-l));
   }
-  header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; margin: 0 6px 14px; }
   .mark { font-size: 22px; font-weight: 650; letter-spacing: -.03em; }
   .mark span { font-weight: 450; opacity: .7; }
   .hint { font-size: 12px; color: var(--mute); }
-
-  .search-row { display: flex; gap: 12px; align-items: stretch; }
+  .search-row { display: flex; gap: 12px; align-items: stretch; margin: 0 6px; }
   .field, .store, .card, .chip {
     background: #5C5C5C;
     border: 1px solid var(--line);
-    box-shadow:
-      inset 1px 1px 0 rgba(255,255,255,.2),
-      -6px -6px 14px var(--hi),
-      7px 8px 16px var(--lo);
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,.2), -6px -6px 14px var(--hi), 7px 8px 16px var(--lo);
   }
-  .field {
-    flex: 1; display: flex; align-items: center; gap: 8px;
-    height: 52px; border-radius: 18px; padding: 0 14px;
-  }
+  .field { flex: 1; display: flex; align-items: center; gap: 8px; height: 52px; border-radius: 18px; padding: 0 14px; }
   .field svg { flex: none; opacity: .7; }
   input {
     flex: 1; border: 0; outline: 0; background: transparent; color: var(--ink);
-    font: 16px/1.2 -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    min-width: 0;
+    font: 16px/1.2 -apple-system, BlinkMacSystemFont, system-ui, sans-serif; min-width: 0;
   }
   input::placeholder { color: rgba(244,244,242,.42); }
   .store {
     width: 64px; height: 52px; border-radius: 18px; color: var(--ink);
     font: 650 15px/1 -apple-system, system-ui, sans-serif; letter-spacing: .04em;
-    cursor: pointer;
   }
-  .store:active, .card:active, .chip:active {
-    box-shadow:
-      inset 4px 4px 8px rgba(0,0,0,.35),
-      inset -3px -3px 7px rgba(255,255,255,.12);
+  .store:active, .chip:active {
+    box-shadow: inset 4px 4px 8px rgba(0,0,0,.35), inset -3px -3px 7px rgba(255,255,255,.12);
     transform: translateY(1px);
   }
-  .list {
-    margin-top: 22px;
-    display: flex; flex-direction: column; align-items: center; gap: 22px;
-    overflow: visible;
-    padding: 12px 4px 8px;
-  }
+  .list { margin-top: 18px; overflow: visible; padding: 8px 0 12px; }
+  .sec { margin: 8px 8px 10px; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: var(--mute); }
+  .card, .pin { -webkit-touch-callout: none; user-select: none; }
   .card {
-    width: calc(100% - 28px);
-    display: grid; grid-template-columns: 58px 1fr; gap: 12px; align-items: center;
-    padding: 12px; border-radius: 22px; text-decoration: none; color: inherit;
+    width: calc(100% - 16px); margin: 0 auto 18px;
+    display: grid; grid-template-columns: 52px 1fr 32px; gap: 10px; align-items: start;
+    padding: 12px; border-radius: 22px; color: inherit; text-align: left;
     backdrop-filter: blur(22px) saturate(160%);
     -webkit-backdrop-filter: blur(22px) saturate(160%);
     background: rgba(92,92,92,.72);
@@ -103,53 +84,47 @@
     to { opacity: 1; transform: none; filter: none; }
   }
   .icon {
-    width: 58px; height: 58px; border-radius: 14px; object-fit: cover;
+    width: 52px; height: 52px; border-radius: 13px; object-fit: cover; margin-top: 2px;
     box-shadow: 0 6px 12px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35);
     background: #4a4a4a;
   }
-  .name { font-size: 16px; font-weight: 620; letter-spacing: -.02em; line-height: 1.2; }
-  .seller { margin-top: 2px; font-size: 12px; color: var(--mute); }
-  .bid {
-    margin-top: 6px; display: flex; align-items: center; gap: 8px;
-    font: 12px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
-    color: #F7F7F5; word-break: break-all;
+  .body { min-width: 0; }
+  .name {
+    font-size: 16px; font-weight: 620; letter-spacing: -.02em; line-height: 1.2;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .copy {
-    flex: none; border: 0; color: var(--ink); background: #5C5C5C;
-    width: 28px; height: 28px; border-radius: 9px; padding: 0;
+  .seller { margin-top: 2px; font-size: 12px; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bid {
+    margin-top: 6px; font: 12px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: #F7F7F5; overflow-wrap: anywhere;
+  }
+  .meta { margin-top: 4px; font-size: 12px; color: var(--mute); }
+  .pin {
+    width: 32px; height: 32px; border: 0; border-radius: 10px; color: var(--ink); background: #5C5C5C;
     box-shadow: -3px -3px 6px rgba(255,255,255,.16), 3px 4px 7px rgba(0,0,0,.4);
   }
-  .empty, .err {
-    margin: auto; text-align: center; color: var(--mute); font-size: 14px; padding: 28px 12px;
-  }
-  .sheet {
-    position: fixed; inset: 0; background: rgba(0,0,0,.28);
-    display: none; align-items: flex-end; z-index: 5;
-  }
+  .pin.on { color: #F3D27A; }
+  .empty, .err { text-align: center; color: var(--mute); font-size: 14px; padding: 28px 16px; }
+  .sheet { position: fixed; inset: 0; background: rgba(0,0,0,.28); display: none; align-items: flex-end; z-index: 5; }
   .sheet.on { display: flex; }
   .panel {
     width: 100%; max-height: 70dvh; overflow: auto;
     background: rgba(92,92,92,.86);
     backdrop-filter: blur(28px) saturate(160%);
     -webkit-backdrop-filter: blur(28px) saturate(160%);
-    border-radius: 28px 28px 0 0;
-    border: 1px solid var(--line);
+    border-radius: 28px 28px 0 0; border: 1px solid var(--line);
     box-shadow: 0 -10px 30px rgba(0,0,0,.35);
     padding: 14px 16px calc(18px + var(--safe-b));
   }
   .panel h2 { margin: 4px 0 12px; font-size: 16px; font-weight: 620; }
   .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-  .chip {
-    height: 44px; border-radius: 14px; color: var(--ink);
-    font: 640 13px/1 -apple-system, system-ui, sans-serif;
-  }
+  .chip { height: 44px; border-radius: 14px; color: var(--ink); font: 640 13px/1 -apple-system, system-ui, sans-serif; }
   .chip.on { outline: 1px solid rgba(255,255,255,.45); }
   .toast {
     position: fixed; left: 50%; bottom: calc(24px + var(--safe-b));
     transform: translateX(-50%) translateY(8px); opacity: 0;
     background: #2c2c2c; color: #fff; border-radius: 999px;
-    padding: 8px 14px; font-size: 13px; pointer-events: none;
-    transition: .25s ease;
+    padding: 8px 14px; font-size: 13px; pointer-events: none; transition: .25s ease;
   }
   .toast.on { opacity: 1; transform: translateX(-50%); }
 </style>
@@ -158,18 +133,16 @@
   <div class="app">
     <header>
       <div class="mark">Bundle <span>ID</span></div>
-      <div class="hint">iTunes · 10 app</div>
+      <div class="hint">Chạm chép · giữ mở</div>
     </header>
     <div class="search-row">
       <label class="field">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-        <input id="q" placeholder="Tên ứng dụng" autocomplete="off" enterkeyhint="search">
+        <input id="q" placeholder="Tên, bundle id hoặc link" autocomplete="off" enterkeyhint="search">
       </label>
       <button class="store" id="storeBtn" type="button" aria-label="Store">VN</button>
     </div>
-    <div class="list" id="list">
-      <div class="empty">Nhập tên để lấy bundle id.</div>
-    </div>
+    <div class="list" id="list"></div>
   </div>
   <div class="sheet" id="sheet">
     <div class="panel">
@@ -177,7 +150,7 @@
       <div class="grid" id="grid"></div>
     </div>
   </div>
-  <div class="toast" id="toast">Đã chép bundle id</div>
+  <div class="toast" id="toast">Đã chép</div>
 <script>
 const STORES = ["VN","US","UK","JP","KR","CN","TW","HK","SG","TH","AU","CA","DE","FR","IT","ES","IN","BR","ID","NL"];
 const iso = c => c === "UK" ? "gb" : c.toLowerCase();
@@ -190,37 +163,61 @@ const sheet = document.getElementById("sheet");
 const grid = document.getElementById("grid");
 storeBtn.textContent = store;
 
+const load = k => { try { return JSON.parse(localStorage.getItem(k)) || []; } catch { return []; } };
+const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const pinned = id => load("bid.pins").some(a => a.trackId === id);
+
 STORES.forEach(code => {
   const b = document.createElement("button");
   b.className = "chip" + (code === store ? " on" : "");
+  b.type = "button";
   b.textContent = code;
   b.onclick = () => {
     store = code;
     localStorage.setItem("bid.store", code);
     storeBtn.textContent = code;
+    [...grid.children].forEach(n => n.classList.toggle("on", n.textContent === code));
     sheet.classList.remove("on");
-    if (q.value.trim()) run();
+    run();
   };
   grid.appendChild(b);
 });
 storeBtn.onclick = () => sheet.classList.add("on");
 sheet.onclick = e => { if (e.target === sheet) sheet.classList.remove("on"); };
-
 q.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(run, 320); });
 q.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); run(); } });
 
-function art(u) {
-  return u ? u.replace(/\/\d+x\d+bb\.(jpg|png)/, "/512x512bb.$1") : "";
-}
+function art(u) { return u ? u.replace(/\/\d+x\d+bb\.(jpg|png)/, "/512x512bb.$1") : ""; }
 function toast(t) {
   const el = document.getElementById("toast");
   el.textContent = t;
   el.classList.add("on");
   setTimeout(() => el.classList.remove("on"), 1200);
 }
-async function lookup(term) {
-  const url = "https://itunes.apple.com/search?term=" + encodeURIComponent(term)
-    + "&country=" + iso(store) + "&media=software&entity=software&limit=10";
+function priceOf(a) {
+  if (a.formattedPrice) return a.price === 0 ? "Miễn phí" : a.formattedPrice;
+  return "";
+}
+function pack(a) {
+  return {
+    trackId: a.trackId, trackName: a.trackName || "", sellerName: a.sellerName || a.artistName || "",
+    bundleId: a.bundleId, artworkUrl100: a.artworkUrl100 || a.artworkUrl512 || "",
+    trackViewUrl: a.trackViewUrl || "", version: a.version || "", formattedPrice: a.formattedPrice || "", price: a.price
+  };
+}
+function remember(a) {
+  const row = pack(a);
+  const next = [row, ...load("bid.history").filter(x => x.trackId !== row.trackId)].slice(0, 12);
+  save("bid.history", next);
+}
+function togglePin(a) {
+  const row = pack(a);
+  const cur = load("bid.pins");
+  const has = cur.some(x => x.trackId === row.trackId);
+  save("bid.pins", has ? cur.filter(x => x.trackId !== row.trackId) : [row, ...cur].slice(0, 20));
+  toast(has ? "Đã bỏ ghim" : "Đã ghim");
+}
+async function call(url) {
   try {
     const r = await fetch(url);
     if (!r.ok) throw new Error("http");
@@ -232,49 +229,91 @@ async function lookup(term) {
       const done = () => { delete window[cb]; s.remove(); };
       window[cb] = d => { done(); ok(d); };
       s.onerror = () => { done(); bad(); };
-      s.src = url + "&callback=" + cb;
+      s.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
       document.head.appendChild(s);
     });
   }
 }
+function queryUrl(term) {
+  const cc = iso(store);
+  const id = (term.match(/(?:^|\/|id)(\d{6,})/) || [])[1];
+  if (/apps\.apple\.com|itunes\.apple\.com|itms-apps:/.test(term) && id)
+    return "https://itunes.apple.com/lookup?id=" + id + "&country=" + cc;
+  if (/^\d{6,}$/.test(term))
+    return "https://itunes.apple.com/lookup?id=" + term + "&country=" + cc;
+  if (/^[A-Za-z0-9-]+(\.[A-Za-z0-9-]+){2,}$/.test(term))
+    return "https://itunes.apple.com/lookup?bundleId=" + encodeURIComponent(term) + "&country=" + cc;
+  return "https://itunes.apple.com/search?term=" + encodeURIComponent(term) + "&country=" + cc + "&media=software&entity=software&limit=10";
+}
+function card(a, i) {
+  const el = document.createElement("button");
+  el.type = "button";
+  el.className = "card";
+  el.style.setProperty("--i", i);
+  const meta = [a.version, priceOf(a)].filter(Boolean).join(" · ");
+  el.innerHTML = '<img class="icon" alt="" src="' + art(a.artworkUrl100) + '"><div class="body"><div class="name"></div><div class="seller"></div><div class="bid"></div><div class="meta"></div></div><button class="pin' + (pinned(a.trackId) ? " on" : "") + '" type="button" aria-label="Ghim">★</button>';
+  el.querySelector(".name").textContent = a.trackName || "";
+  el.querySelector(".seller").textContent = a.sellerName || a.artistName || "";
+  el.querySelector(".bid").innerHTML = (a.bundleId || "").split(".").join(".<wbr>");
+  el.querySelector(".meta").textContent = meta;
+  let hold = 0, long = false;
+  const open = () => { location.href = "itms-apps://apps.apple.com/app/id" + a.trackId; };
+  el.addEventListener("pointerdown", ev => {
+    if (ev.target.closest(".pin")) return;
+    long = false;
+    hold = setTimeout(() => { long = true; open(); }, 480);
+  });
+  const clear = () => clearTimeout(hold);
+  el.addEventListener("pointerup", clear);
+  el.addEventListener("pointerleave", clear);
+  el.addEventListener("pointercancel", clear);
+  el.addEventListener("contextmenu", ev => ev.preventDefault());
+  el.addEventListener("click", ev => {
+    if (ev.target.closest(".pin")) {
+      ev.preventDefault();
+      togglePin(a);
+      run();
+      return;
+    }
+    if (long) return;
+    navigator.clipboard.writeText(a.bundleId).then(() => toast("Đã chép " + a.bundleId)).catch(() => toast(a.bundleId));
+    remember(a);
+  });
+  return el;
+}
+function paint(groups) {
+  list.innerHTML = "";
+  let n = 0;
+  groups.forEach(g => {
+    if (!g.apps.length) return;
+    const h = document.createElement("div");
+    h.className = "sec";
+    h.textContent = g.title;
+    list.appendChild(h);
+    g.apps.forEach(a => list.appendChild(card(a, n++)));
+  });
+  if (!n) list.innerHTML = '<div class="empty">Chưa có gì. Tìm tên, dán bundle id hoặc link App Store.</div>';
+}
 async function run() {
   const term = q.value.trim();
   const id = ++seq;
-  if (!term) { list.innerHTML = '<div class="empty">Nhập tên để lấy bundle id.</div>'; return; }
+  if (!term) {
+    paint([{ title: "Ghim", apps: load("bid.pins") }, { title: "Gần đây", apps: load("bid.history") }]);
+    return;
+  }
   list.innerHTML = '<div class="empty">Đang tìm…</div>';
   try {
-    const data = await lookup(term);
+    const data = await call(queryUrl(term));
     if (id !== seq) return;
     const apps = (data.results || []).filter(a => a.bundleId).slice(0, 10);
     if (!apps.length) { list.innerHTML = '<div class="empty">Không có app trên store ' + store + '.</div>'; return; }
-    list.innerHTML = "";
-    apps.forEach((a, i) => {
-      const el = document.createElement("a");
-      el.className = "card";
-      el.style.setProperty("--i", i);
-      el.href = a.trackViewUrl || ("https://apps.apple.com/" + iso(store) + "/app/id" + a.trackId);
-      el.innerHTML =
-        '<img class="icon" alt="" src="' + art(a.artworkUrl100 || a.artworkUrl512) + '">' +
-        '<div><div class="name"></div><div class="seller"></div><div class="bid"><span></span>' +
-        '<button class="copy" type="button" aria-label="Chép">⎘</button></div></div>';
-      el.querySelector(".name").textContent = a.trackName || "";
-      el.querySelector(".seller").textContent = a.sellerName || a.artistName || "";
-      el.querySelector(".bid span").textContent = a.bundleId;
-      el.addEventListener("click", ev => {
-        if (ev.target.closest(".copy")) return;
-        ev.preventDefault();
-        location.href = "itms-apps://apps.apple.com/app/id" + a.trackId;
-      });
-      el.querySelector(".copy").onclick = ev => {
-        ev.preventDefault(); ev.stopPropagation();
-        navigator.clipboard.writeText(a.bundleId).then(() => toast("Đã chép " + a.bundleId)).catch(() => toast(a.bundleId));
-      };
-      list.appendChild(el);
-    });
+    apps.forEach(remember);
+    paint([{ title: "Kết quả", apps }]);
   } catch {
     if (id === seq) list.innerHTML = '<div class="err">Không gọi được iTunes. Thử lại.</div>';
   }
 }
+run();
 </script>
 </body>
 </html>
