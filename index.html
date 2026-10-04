@@ -44,7 +44,19 @@
   header { display: flex; align-items: baseline; justify-content: space-between; margin: 0 6px 14px; }
   .mark { font-size: 22px; font-weight: 650; letter-spacing: -.03em; }
   .mark span { font-weight: 450; opacity: .7; }
-  .hint { font-size: 12px; color: var(--mute); }
+  .brand {
+  border: 0; background: none; padding: 0; font: 650 13px/1 -apple-system, system-ui, sans-serif;
+  background-image: linear-gradient(100deg, var(--mute) 30%, #fff 50%, var(--mute) 70%);
+  background-size: 220% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: wave 1.8s linear infinite;
+}
+@keyframes wave { from { background-position: 120% 0; } to { background-position: -20% 0; } }
+.lights { display: flex; gap: 7px; align-items: center; }
+.lights i { width: 12px; height: 12px; border-radius: 50%; display: block; }
+.lights i:nth-child(1) { background: #ff5f57; }
+.lights i:nth-child(2) { background: #febc2e; }
+.lights i:nth-child(3) { background: #28c840; }
+.menu { display: grid; gap: 10px; margin-top: 8px; }
   .search-row { display: flex; gap: 10px; align-items: center; margin: 0 2px; }
   .field, .store, .card, .chip {
     background: #5C5C5C;
@@ -161,7 +173,7 @@
   <div class="app">
     <header>
       <div class="mark">Bundle <span>ID</span></div>
-      <div class="hint">Chạm chép · giữ Store</div>
+      <button class="brand" id="brand" type="button">Sentechtipsvn</button>
     </header>
     <div class="search-row">
       <button class="fav" id="favBtn" type="button" aria-label="Yêu thích">★</button>
@@ -183,11 +195,14 @@
   <div class="sheet" id="help">
     <div class="panel">
       <div class="row">
-        <h2 id="helpTitle">Phím tắt</h2>
+        <div class="lights" aria-hidden="true"><i></i><i></i><i></i></div>
         <button class="x" id="helpX" type="button">Xong</button>
       </div>
-      <p class="steps" id="helpBody"></p>
-      <button class="go" id="helpGo" type="button">Mở Phím tắt</button>
+      <div class="menu">
+        <button class="go" id="actStore" type="button">Tải xuống</button>
+        <button class="go" id="actIcon" type="button">Tải biểu tượng</button>
+        <button class="go" id="actRun" type="button">Chạy phím tắt</button>
+      </div>
     </div>
   </div>
 <script>
@@ -290,14 +305,39 @@ function queryUrl(term) {
     return "https://itunes.apple.com/lookup?bundleId=" + encodeURIComponent(term) + "&country=" + cc;
   return "https://itunes.apple.com/search?term=" + encodeURIComponent(term) + "&country=" + cc + "&media=software&entity=software&limit=10";
 }
-function shortcut(a) {
-  document.getElementById("helpTitle").textContent = a.trackName || "Phím tắt";
-  document.getElementById("helpBody").textContent = "iOS không nhận file phím tắt chưa ký. Trong Phím tắt: + → Mở app → chọn " + (a.trackName || "app") + " → Chia sẻ → Thêm vào Màn hình chính.";
-  document.getElementById("help").classList.add("on");
+let current = null;
+function icon100(u) { return u ? u.replace(/\/\d+x\d+bb\.(jpg|png)/, "/100x100bb.$1") : ""; }
+function fileName(a) {
+  return (a.trackName || "app").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\w\-]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") || "app";
 }
+function appJson(a) {
+  return JSON.stringify({ name: a.trackName || "", bundleId: a.bundleId || "", icon: icon100(a.artworkUrl100 || a.artworkUrl512 || "") }, null, 2);
+}
+function shortcut(a) { current = a; document.getElementById("help").classList.add("on"); }
+document.getElementById("brand").onclick = () => { location.href = "https://browse.shortcuty.app/user/Sentechtipsvn"; };
 document.getElementById("helpX").onclick = () => document.getElementById("help").classList.remove("on");
 document.getElementById("help").onclick = e => { if (e.target.id === "help") document.getElementById("help").classList.remove("on"); };
-document.getElementById("helpGo").onclick = () => { location.href = "shortcuts://"; };
+document.getElementById("actStore").onclick = () => {
+  if (!current) return;
+  location.href = current.trackViewUrl || ("itms-apps://apps.apple.com/app/id" + current.trackId);
+};
+document.getElementById("actIcon").onclick = async () => {
+  if (!current) return;
+  const url = art(current.artworkUrl100 || current.artworkUrl512);
+  try {
+    const blob = await (await fetch(url)).blob();
+    const file = new File([blob], fileName(current) + "-512.jpg", { type: blob.type || "image/jpeg" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); return; }
+  } catch (e) {}
+  if (navigator.share) { try { await navigator.share({ url }); return; } catch (e) {} }
+  location.href = url;
+};
+document.getElementById("actRun").onclick = () => {
+  if (!current) return;
+  const text = appJson(current);
+  const name = fileName(current) + ".json";
+  location.href = "shortcuts://run-shortcut?name=" + encodeURIComponent("Bundle ID") + "&input=text&text=" + encodeURIComponent(text);
+};
 function card(a, i) {
   const el = document.createElement("button");
   el.type = "button";
