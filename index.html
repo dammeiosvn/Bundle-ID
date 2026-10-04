@@ -127,7 +127,14 @@
     background: #2c2c2c; color: #fff; border-radius: 999px;
     padding: 8px 14px; font-size: 13px; pointer-events: none; transition: .25s ease;
   }
-  .toast.on { opacity: 1; transform: translateX(-50%); }
+  .row { display: flex; align-items: center; justify-content: space-between; }
+  .x, .go {
+    border: 0; color: var(--ink); background: #5C5C5C; border-radius: 12px;
+    box-shadow: -3px -3px 6px rgba(255,255,255,.16), 3px 4px 7px rgba(0,0,0,.4);
+  }
+  .x { height: 32px; padding: 0 12px; font: 600 13px/1 -apple-system, system-ui, sans-serif; }
+  .go { width: 100%; height: 46px; margin-top: 14px; font: 620 15px/1 -apple-system, system-ui, sans-serif; }
+  .steps { margin: 0; color: var(--mute); font-size: 14px; line-height: 1.45; }
 </style>
 </head>
 <body>
@@ -151,7 +158,16 @@
       <div class="grid" id="grid"></div>
     </div>
   </div>
-  <div class="toast" id="toast">Đã chép</div>
+  <div class="sheet" id="help">
+    <div class="panel">
+      <div class="row">
+        <h2 id="helpTitle">Phím tắt</h2>
+        <button class="x" id="helpX" type="button">Xong</button>
+      </div>
+      <p class="steps" id="helpBody"></p>
+      <button class="go" id="helpGo" type="button">Mở Phím tắt</button>
+    </div>
+  </div>
 <script>
 const STORES = ["VN","US","UK","JP","KR","CN","TW","HK","SG","TH","AU","CA","DE","FR","IT","ES","IN","BR","ID","NL"];
 const iso = c => c === "UK" ? "gb" : c.toLowerCase();
@@ -247,36 +263,13 @@ function queryUrl(term) {
   return "https://itunes.apple.com/search?term=" + encodeURIComponent(term) + "&country=" + cc + "&media=software&entity=software&limit=10";
 }
 function shortcut(a) {
-  const name = (a.trackName || "App").replace(/[<>&]/g, "");
-  const bid = a.bundleId || "";
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-<key>WFWorkflowClientVersion</key><string>2700.0.4</string>
-<key>WFWorkflowClientRelease</key><string>18.0</string>
-<key>WFWorkflowMinimumClientVersion</key><integer>900</integer>
-<key>WFWorkflowMinimumClientVersionString</key><string>900</string>
-<key>WFWorkflowIcon</key><dict><key>WFWorkflowIconGlyphNumber</key><integer>59511</integer><key>WFWorkflowIconStartColor</key><integer>4282601983</integer></dict>
-<key>WFWorkflowImportQuestions</key><array/>
-<key>WFWorkflowInputContentItemClasses</key><array><string>WFStringContentItem</string></array>
-<key>WFWorkflowTypes</key><array/>
-<key>WFWorkflowHasShortcutInputVariables</key><false/>
-<key>WFWorkflowActions</key><array><dict>
-<key>WFWorkflowActionIdentifier</key><string>is.workflow.actions.openapp</string>
-<key>WFWorkflowActionParameters</key><dict><key>WFApp</key><dict>
-<key>Name</key><string>${name}</string>
-<key>BundleIdentifier</key><string>${bid}</string>
-</dict></dict></dict></array>
-</dict></plist>`;
-  const file = new File([xml], name + ".shortcut", { type: "application/octet-stream" });
-  const url = URL.createObjectURL(file);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = name + ".shortcut";
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1500);
-  toast("Mở file trong Phím tắt, rồi Thêm vào Màn hình chính");
+  document.getElementById("helpTitle").textContent = a.trackName || "Phím tắt";
+  document.getElementById("helpBody").textContent = "iOS không nhận file phím tắt chưa ký. Trong Phím tắt: + → Mở app → chọn " + (a.trackName || "app") + " → Chia sẻ → Thêm vào Màn hình chính.";
+  document.getElementById("help").classList.add("on");
 }
+document.getElementById("helpX").onclick = () => document.getElementById("help").classList.remove("on");
+document.getElementById("help").onclick = e => { if (e.target.id === "help") document.getElementById("help").classList.remove("on"); };
+document.getElementById("helpGo").onclick = () => { location.href = "shortcuts://"; };
 function card(a, i) {
   const el = document.createElement("button");
   el.type = "button";
