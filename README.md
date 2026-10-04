@@ -7,7 +7,3 @@ Webclip tra bundle id ứng dụng qua iTunes Search API.
 - Bấm khung mở App Store, nút chép bundle id
 
 ## Cài như app
-
-1. Bật GitHub Pages: Settings → Pages → branch `main` / root.
-2. Mở `https://dammeiosvn.github.io/Bundle-ID/`
-3. Safari → Share → Add to Home Screen, hoặc cài `Bundle-ID.mobileconfig`.
