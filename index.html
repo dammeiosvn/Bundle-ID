@@ -71,7 +71,7 @@
   .card, .pin { -webkit-touch-callout: none; user-select: none; }
   .card {
     width: calc(100% - 16px); margin: 0 auto 18px;
-    display: grid; grid-template-columns: 52px 1fr 32px; gap: 10px; align-items: start;
+    display: grid; grid-template-columns: 52px 1fr auto; gap: 10px; align-items: start;
     padding: 12px; border-radius: 22px; color: inherit; text-align: left;
     backdrop-filter: blur(22px) saturate(160%);
     -webkit-backdrop-filter: blur(22px) saturate(160%);
@@ -99,7 +99,8 @@
     color: #F7F7F5; overflow-wrap: anywhere;
   }
   .meta { margin-top: 4px; font-size: 12px; color: var(--mute); }
-  .pin {
+  .acts { display: flex; flex-direction: column; gap: 8px; }
+  .pin, .sc {
     width: 32px; height: 32px; border: 0; border-radius: 10px; color: var(--ink); background: #5C5C5C;
     box-shadow: -3px -3px 6px rgba(255,255,255,.16), 3px 4px 7px rgba(0,0,0,.4);
   }
@@ -133,7 +134,7 @@
   <div class="app">
     <header>
       <div class="mark">Bundle <span>ID</span></div>
-      <div class="hint">Chạm chép · giữ mở</div>
+      <div class="hint">Chạm chép · giữ Store</div>
     </header>
     <div class="search-row">
       <label class="field">
@@ -245,13 +246,44 @@ function queryUrl(term) {
     return "https://itunes.apple.com/lookup?bundleId=" + encodeURIComponent(term) + "&country=" + cc;
   return "https://itunes.apple.com/search?term=" + encodeURIComponent(term) + "&country=" + cc + "&media=software&entity=software&limit=10";
 }
+function shortcut(a) {
+  const name = (a.trackName || "App").replace(/[<>&]/g, "");
+  const bid = a.bundleId || "";
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>WFWorkflowClientVersion</key><string>2700.0.4</string>
+<key>WFWorkflowClientRelease</key><string>18.0</string>
+<key>WFWorkflowMinimumClientVersion</key><integer>900</integer>
+<key>WFWorkflowMinimumClientVersionString</key><string>900</string>
+<key>WFWorkflowIcon</key><dict><key>WFWorkflowIconGlyphNumber</key><integer>59511</integer><key>WFWorkflowIconStartColor</key><integer>4282601983</integer></dict>
+<key>WFWorkflowImportQuestions</key><array/>
+<key>WFWorkflowInputContentItemClasses</key><array><string>WFStringContentItem</string></array>
+<key>WFWorkflowTypes</key><array/>
+<key>WFWorkflowHasShortcutInputVariables</key><false/>
+<key>WFWorkflowActions</key><array><dict>
+<key>WFWorkflowActionIdentifier</key><string>is.workflow.actions.openapp</string>
+<key>WFWorkflowActionParameters</key><dict><key>WFApp</key><dict>
+<key>Name</key><string>${name}</string>
+<key>BundleIdentifier</key><string>${bid}</string>
+</dict></dict></dict></array>
+</dict></plist>`;
+  const file = new File([xml], name + ".shortcut", { type: "application/octet-stream" });
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = name + ".shortcut";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  toast("Mở file trong Phím tắt, rồi Thêm vào Màn hình chính");
+}
 function card(a, i) {
   const el = document.createElement("button");
   el.type = "button";
   el.className = "card";
   el.style.setProperty("--i", i);
   const meta = [a.version, priceOf(a)].filter(Boolean).join(" · ");
-  el.innerHTML = '<img class="icon" alt="" src="' + art(a.artworkUrl100) + '"><div class="body"><div class="name"></div><div class="seller"></div><div class="bid"></div><div class="meta"></div></div><button class="pin' + (pinned(a.trackId) ? " on" : "") + '" type="button" aria-label="Ghim">★</button>';
+  el.innerHTML = '<img class="icon" alt="" src="' + art(a.artworkUrl100) + '"><div class="body"><div class="name"></div><div class="seller"></div><div class="bid"></div><div class="meta"></div></div><div class="acts"><button class="pin' + (pinned(a.trackId) ? " on" : "") + '" type="button" aria-label="Ghim">★</button><button class="sc" type="button" aria-label="Phím tắt">↗</button></div>';
   el.querySelector(".name").textContent = a.trackName || "";
   el.querySelector(".seller").textContent = a.sellerName || a.artistName || "";
   el.querySelector(".bid").innerHTML = (a.bundleId || "").split(".").join(".<wbr>");
@@ -259,7 +291,7 @@ function card(a, i) {
   let hold = 0, long = false;
   const open = () => { location.href = "itms-apps://apps.apple.com/app/id" + a.trackId; };
   el.addEventListener("pointerdown", ev => {
-    if (ev.target.closest(".pin")) return;
+    if (ev.target.closest(".pin") || ev.target.closest(".sc")) return;
     long = false;
     hold = setTimeout(() => { long = true; open(); }, 480);
   });
@@ -269,6 +301,11 @@ function card(a, i) {
   el.addEventListener("pointercancel", clear);
   el.addEventListener("contextmenu", ev => ev.preventDefault());
   el.addEventListener("click", ev => {
+    if (ev.target.closest(".sc")) {
+      ev.preventDefault();
+      shortcut(a);
+      return;
+    }
     if (ev.target.closest(".pin")) {
       ev.preventDefault();
       togglePin(a);
